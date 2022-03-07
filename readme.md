@@ -30,6 +30,8 @@ Clone this Repo and follow Instructions.
 So we will end up with an Instance which can accessed by the administrative user via SSH and HTTPS on the Public IP.
 Root can access via the WebGUI and Console Interface but is not permitted for SSH.
 
+The whole process takes about 10 minutes to build a freebsd image, bootstrap into opensense and build an image out of it to finally create a runn 
+
 ### Build opnsense Image
 
 Export the needed secrets to make it work:
@@ -103,4 +105,9 @@ Inside the image populate the environment variables
 
 and then run the shell script
 
-    bash hetzner_setup.sh -d
+    bash hetzner_setup.sh -d/home/hetzner  -t true -o false
+
+if you want to keep your ssh-keys copy it from the container to your machine
+
+    docker cp containerid:/.ssh/$OPNSENSE_USER ~/.ssh/opnsense
+    docker cp containerid:/.ssh/$OPNSENSE_USER.pub ~/.ssh/opnsense.pub

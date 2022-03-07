@@ -1,20 +1,18 @@
 #!/bin/bash
 
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-    -s|--skip_ssh)
-      skip_ssh=true
-      shift # past argument
-      shift # past value
-      ;;
-    -d|--docker)
-      WORKDIR="/home/hetzner"
-      shift # past argument
-      shift # past value
-      ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
-    esac
-    shift
+while getopts ":s:d:o:t:" opt; do
+  case $opt in
+    s) skip_ssh=$OPTARG
+    ;;
+    d) WORKDIR=$OPTARG
+    ;;
+    o) OPNSENSE=$OPTARG
+    ;;
+    t) TERRAFORM=$OPTARG
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
 done
 
 echo "Setup Hetzner Environment"
@@ -111,10 +109,16 @@ echo "initialize packer.."
 
 packer init packer/freebsd.pkr.hcl
 
-echo "build freebsd image"
+if [[ -z "${OPNSENSE}" ]]
+then
+    packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
+else
+    packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
+    packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
+fi
 
-packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
-
-echo "run packer to bootstrap opnsense from the previously created freebsd image"
-
-packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
+if [[ -z "${TERRAFORM}" ]]
+then
+    terraform init -chdir=terraform/opnsense
+    terraform apply terraform/opnsense/main.tf -auto-approve
+fi
