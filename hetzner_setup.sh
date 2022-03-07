@@ -31,7 +31,7 @@ else
   echo $INVALID_TOKEN
 fi
 
-if [[ -z "${INVALID_TOKEN}" ]]
+if [[ $INVALID_TOKEN = "null" ]]
 then
   echo "Valid Token"
 else
