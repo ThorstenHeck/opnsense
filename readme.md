@@ -30,7 +30,7 @@ Clone this Repo and follow Instructions.
 So we will end up with an Instance which can accessed by the administrative user via SSH and HTTPS on the Public IP.
 Root can access via the WebGUI and Console Interface but is not permitted for SSH.
 
-The whole process takes about 15 minutes to build a freebsd image, bootstrap into opensense and build an image out of it to finally create a runn 
+The whole process takes about 15 minutes to build a freebsd image, bootstrap into opensense and build an image out of it to finally create a running remote opnsense Instance - the process will speed up if you don't need to create the freebsd image.
 
 ### Build opnsense Image
 
