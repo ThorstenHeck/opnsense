@@ -49,7 +49,8 @@ If all environment vars are set up properly run:
 
     bash hetzner_setup.sh
 
-it will ask you to enter a working directory and use this to setup a SSH-Key Pair in given directory under $WORKDIR/.ssh 
+The default working directory is the home directory and the script will setup a SSH-Key Pair under $WORKDIR/.ssh.
+Whatever you can pass your own working directory with the "-d /workdir/path" parameter.
 
 You can skip the SSH-Key creation with the "-s" parameter but to make the setup script work out of the box you have to copy a valid SSH-Key into the working directory.
 
@@ -105,7 +106,7 @@ Inside the image populate the environment variables
 
 and then run the shell script
 
-    bash hetzner_setup.sh -d /home/hetzner -t true -o true -s true
+    bash hetzner_setup.sh -t true
 
 if you want to keep your ssh-keys copy it from the container to your machine
 
