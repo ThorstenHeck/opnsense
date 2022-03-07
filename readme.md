@@ -82,7 +82,7 @@ It basically parses the config.xml properly and reloads it on the instance.
 
 An advanced setup with an ansible dependency can be found here:
 
-github
+https://github.com/ThorstenHeck/opnsense_advanced
 
 
 ## Docker Setup
