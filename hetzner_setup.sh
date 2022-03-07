@@ -23,13 +23,17 @@ then
   exit 1  
 fi
 
-if [[ -z "${WORKDIR}" ]]
+if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
 then
-    echo "Set Working Directory"
-    read WORKDIR
+  echo "OPNSENSE_USER_PASSWORD not found - please export it as an environment variable"
+  exit 1  
 fi
 
-mkdir -p $WORKDIR/.ssh
+if [[ -z "${OPNSENSE_ROOT_PASSWORD}" ]]
+then
+  echo "OPNSENSE_ROOT_PASSWORD not found - please export it as an environment variable"
+  exit 1  
+fi
 
 if [[ -z "${OPNSENSE_USER}" ]]
 then
@@ -37,7 +41,18 @@ then
   exit 1  
 fi
 
-if [ "$skip_ssh" = true ] ; then
+if [[ -z "${WORKDIR}" ]]
+then
+    echo "No Working Directory set - using home directory"
+    WORKDIR=$HOME
+else
+    echo "Working Directory set to: $WORKDIR"
+fi
+
+mkdir -p $WORKDIR/.ssh
+
+if [ "$skip_ssh" = true ]
+then
 echo 'Skip SSH-Key creation!'
 SSH_PUB=$(cat $WORKDIR/.ssh/$OPNSENSE_USER.pub)
 else
@@ -68,19 +83,6 @@ fi
 rm $DATA
 fi
 
-
-if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
-then
-  echo "OPNSENSE_USER_PASSWORD not found - please export it as an environment variable"
-  exit 1  
-fi
-
-if [[ -z "${OPNSENSE_ROOT_PASSWORD}" ]]
-then
-  echo "OPNSENSE_ROOT_PASSWORD not found - please export it as an environment variable"
-  exit 1  
-fi
-
 OPNSENSE_ROOT_HASH=$(htpasswd -bnBC 10 "" $OPNSENSE_ROOT_PASSWORD | tr -d ':\n')
 OPNSENSE_USER_HASH=$(htpasswd -bnBC 10 "" $OPNSENSE_USER_PASSWORD | tr -d ':\n')
 
@@ -102,14 +104,14 @@ export OPNSENSE_USER=$OPNSENSE_USER
 EOF
 
 source  $WORKDIR/packer_env.sh
-
 rm  $WORKDIR/packer_env.sh
+
 
 echo "initialize packer.."
 
 packer init packer/freebsd.pkr.hcl
 
-if [[ -z "${OPNSENSE}" ]]
+if [ "$OPNSENSE" = true ]
 then
     packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
 else
@@ -117,7 +119,7 @@ else
     packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
 fi
 
-if [[ -z "${TERRAFORM}" ]]
+if [ "$TERRAFORM" = true ]
 then
     terraform -chdir=terraform/opnsense init
     terraform -chdir=terraform/opnsense apply -auto-approve
