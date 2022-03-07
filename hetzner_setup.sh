@@ -29,12 +29,14 @@ else
   INVALID_TOKEN=$(curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/actions' | jq .error)
   curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/actions' | jq .error
   echo $INVALID_TOKEN
+fi
 
-  if [[ -z "${INVALID_TOKEN}" ]]
-  then
-    echo "Invalid Token - please check your API Token"
-    exit
-  fi
+if [[ -z "${INVALID_TOKEN}" ]]
+then
+  echo "Invalid Token - please check your API Token"
+  exit 1
+else
+  echo "valid token"
 fi
 
 if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
