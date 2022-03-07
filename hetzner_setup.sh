@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "sdot" opt; do
+while getopts "sct" opt; do
   case $opt in
     s) SKIP_SSH="true"
     ;;
@@ -103,9 +103,6 @@ EOF
 
 source  $WORKDIR/packer_env.sh
 rm  $WORKDIR/packer_env.sh
-
-
-echo "initialize packer.."
 
 packer init packer/freebsd.pkr.hcl
 
