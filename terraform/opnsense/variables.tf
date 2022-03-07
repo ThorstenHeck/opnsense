@@ -8,7 +8,7 @@ variable "HCLOUD_TOKEN" {
   type = string
 }
 
-variable "OPNSENSE_ROOT_PASSWORD" {
+variable "OPNSENSE_USER_PASSWORD" {
   type = string
 }
 

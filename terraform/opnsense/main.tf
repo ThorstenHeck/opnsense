@@ -9,13 +9,13 @@ resource "hcloud_server" "server" {
   connection {
     type     = "ssh"
     user     = data.hcloud_ssh_key.ssh-key.name
-    password = var.OPNSENSE_ROOT_PASSWORD
+    password = var.OPNSENSE_USER_PASSWORD
     host     = self.ipv4_address
   }
 
   provisioner "remote-exec" {
     inline = [
-      "echo ${var.OPNSENSE_ROOT_PASSWORD} | sudo -S reboot -r",
+      "echo ${var.OPNSENSE_USER_PASSWORD} | sudo -S reboot -r",
     ]
   }
 }

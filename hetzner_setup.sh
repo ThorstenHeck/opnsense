@@ -1,19 +1,17 @@
 #!/bin/bash
 
-while getopts ":s:d:o:t:" opt; do
+while getopts "sdot" opt; do
   case $opt in
-    s) skip_ssh=$OPTARG
+    s) SKIP_SSH="true"
     ;;
-    d) WORKDIR=$OPTARG
-    ;;
-    o) OPNSENSE=$OPTARG
-    ;;
-    t) TERRAFORM=$OPTARG
+    t) TERRAFORM="true"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
   esac
 done
+
+source secret.env
 
 echo "Setup Hetzner Environment"
 
@@ -43,15 +41,12 @@ fi
 
 if [[ -z "${WORKDIR}" ]]
 then
-    echo "No Working Directory set - using home directory"
     WORKDIR=$HOME
-else
-    echo "Working Directory set to: $WORKDIR"
 fi
 
 mkdir -p $WORKDIR/.ssh
 
-if [ "$skip_ssh" = true ]
+if [ "$SKIP_SSH" = true ]
 then
 echo 'Skip SSH-Key creation!'
 SSH_PUB=$(cat $WORKDIR/.ssh/$OPNSENSE_USER.pub)
@@ -96,8 +91,6 @@ sed -i 's|OPNSENSE_ROOT_HASH\b|'"$OPNSENSE_ROOT_HASH"'|g' packer/opnsense/config
 sed -i 's|OPNSENSE_USER_HASH\b|'"$OPNSENSE_USER_HASH"'|g' packer/opnsense/config.xml
 sed -i 's|OPNSENSE_SSH_PUB\b|'"$OPNSENSE_SSH_PUB"'|g' packer/opnsense/config.xml
 
-echo "Configuration file supplied with password hashes and public SSH Key"
-
 cat <<EOF > $WORKDIR/packer_env.sh
 export OPNSENSE_SSH_PRIV=$OPNSENSE_SSH_PRIV
 export OPNSENSE_USER=$OPNSENSE_USER
@@ -111,15 +104,10 @@ echo "initialize packer.."
 
 packer init packer/freebsd.pkr.hcl
 
-if [ "$OPNSENSE" = true ]
-then
-    packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
-else
-    packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
-    packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
-fi
+packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
+packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
 
-if [ "$TERRAFORM" = true ]
+if [ ! -z "$TERRAFORM" ]
 then
     terraform -chdir=terraform/opnsense init
     terraform -chdir=terraform/opnsense apply -auto-approve
