@@ -23,7 +23,13 @@ echo "Setup Hetzner Environment"
 if [[ -z "${HCLOUD_TOKEN}" ]]
 then
   echo "HCLOUD_TOKEN not found - please export it as an environment variable"
-  exit 1  
+  exit 1
+else
+  INVALID_TOKEN=$(curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/actions' | jq .error)
+  if [[ -z "${INVALID_TOKEN}" ]]
+    echo "Invalid Token - please check your API Token"
+    exit
+  fi
 fi
 
 if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
