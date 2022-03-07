@@ -105,7 +105,7 @@ Inside the image populate the environment variables
 
 and then run the shell script
 
-    bash hetzner_setup.sh -d/home/hetzner -t true -o false
+    bash hetzner_setup.sh -d /home/hetzner -t true -o true -s true
 
 if you want to keep your ssh-keys copy it from the container to your machine
 
