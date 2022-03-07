@@ -252,7 +252,7 @@
     </ssh>
     <user>
       <name>OPNSENSE_USER</name>
-      <descr>OPNSENSE MANAGEMENT USER</descr>
+      <descr>Management user</descr>
       <scope>user</scope>
       <groupname>admins</groupname>
       <shell>/bin/sh</shell>

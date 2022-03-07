@@ -6,10 +6,17 @@ If you actually don't want to leave your terminal at all and avoid to access opn
 
 ## Requirements
 
-hcloud cli
-packer
-htpasswd
-jq
+- packer
+- htpasswd
+- jq
+
+#### optional
+
+- terraform
+
+## Install
+
+Clone this Repo and follow Instructions.
 
 ## Setup
 
@@ -23,15 +30,77 @@ jq
 So we will end up with an Instance which can accessed by the administrative user via SSH and HTTPS on the Public IP.
 Root can access via the WebGUI and Console Interface but is not permitted for SSH.
 
-### 
+### Build opnsense Image
 
-Generate the SSH-Key for the administrative user:
+Export the needed secrets to make it work:
 
-    dd
+    export HCLOUD_TOKEN=<HCLOUD_TOKEN>
+    export OPNSENSE_USER=<name of the opnsense management user>
+    export OPNSENSE_USER_PASSWORD=<SECRET>
+    export OPNSENSE_ROOT_PASSWORD=<SECRET>
 
-Set up your hcloud cli use the right context and setup
+Or edit the secret.env file and execute:
 
-Name of administraive user = manager
-Password of administrative user = securepassword
-Password of root = securepassword
+    source secret.env
 
+If all environment vars are set up properly run:
+
+    bash hetzner_setup.sh
+
+it will ask you to enter a working directory and use this to setup a SSH-Key Pair in given directory under $WORKDIR/.ssh 
+
+You can skip the SSH-Key creation with the "--skip_ssh" parameter but to make the setup script work out of the box you have to copy a valid SSH-Key into the working directory.
+
+    bash hetzner_setup.sh --skip_ssh
+
+Thats it, now you can create a new Server from the opnsense image and access opnsense via the WebGUI or SSH.
+
+Its recommended to reboot the server once after creation, due to an CARP Bug.
+
+### Create Server 
+
+An easy way to directly create a server from the recently build image is using terraform:
+
+Export the HCLOUD_TOKEN as well as the OPNSENSE_USER and OPNSENSE_USER_PASSWORD in terraform format and then initialize and run terraform
+
+    export TF_VAR_HCLOUD_TOKEN=<HCLOUD_TOKEN>
+    export TF_VAR_SSH_KEY=<OPNSENSE_USER>
+    export TF_VAR_OPNSENSE_USER_PASSWORD=<SECRET>
+
+    ssh-add $WORKDIR/.ssh/$OPNSENSE_USER
+    cd terraform/opnsense && terraform init && terraform apply -auto-approve && cd -
+
+### Further Management
+
+To manage opnsense further I highly reccommend the great ansible role by naturalis https://github.com/naturalis/ansible-opnsense
+
+It basically parses the config.xml properly and reloads it on the instance.
+
+#### Advanced Setup Example
+
+An advanced setup with an ansible dependency can be found here:
+
+github
+
+
+## Docker Setup
+
+If you are annoyed of the dependencies you can build and run a docker image:
+
+Prepare the secret.env file to match
+
+Build Docker image:
+
+    docker build . -t opnsense
+
+Run Docker image:
+
+    docker run -it opnsense
+
+Inside the image populate the environment variables
+
+    source secret.env
+
+and then run the shell script
+
+    bash hetzner_setup.sh -d

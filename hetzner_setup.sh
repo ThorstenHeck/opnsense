@@ -1,5 +1,22 @@
 #!/bin/bash
 
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+    -s|--skip_ssh)
+      skip_ssh=true
+      shift # past argument
+      shift # past value
+      ;;
+    -d|--docker)
+      WORKDIR="/home/hetzner"
+      shift # past argument
+      shift # past value
+      ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
 echo "Setup Hetzner Environment"
 
 if [[ -z "${HCLOUD_TOKEN}" ]]
@@ -8,14 +25,24 @@ then
   exit 1  
 fi
 
-echo "Set Working Directory"
-read WORKDIR
+if [[ -z "${WORKDIR}" ]]
+then
+    echo "Set Working Directory"
+    read WORKDIR
+fi
 
 mkdir -p $WORKDIR/.ssh
 
-echo "Enter name of the aministrative opnsense user"
-read OPNSENSE_USER
+if [[ -z "${OPNSENSE_USER}" ]]
+then
+  echo "OPNSENSE_USER not found - please export it as an environment variable"
+  exit 1  
+fi
 
+if [ "$skip_ssh" = true ] ; then
+echo 'Skip SSH-Key creation!'
+SSH_PUB=$(cat $WORKDIR/.ssh/$OPNSENSE_USER.pub)
+else
 echo "Create SSH-Key Pair"
 ssh-keygen -t ed25519 -f $WORKDIR/.ssh/$OPNSENSE_USER -C $OPNSENSE_USER -q -N ''
 
@@ -25,8 +52,6 @@ cat <<EOF > $WORKDIR/data.json
 {"labels":{},"name":"$OPNSENSE_USER","public_key":"$SSH_PUB"}
 EOF
 DATA=$WORKDIR/data.json
-
-echo "Check if SSH-Key exists by name in Hetzner"
 
 SSH_LIST=$(curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/ssh_keys' | jq .meta.pagination.total_entries)
 if [ "$SSH_LIST" -eq "0" ]
@@ -42,18 +67,15 @@ SSH_KEY_ID=$(curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzn
     exit 1
     fi
 fi
-
 rm $DATA
+fi
 
-echo "CHECK OPNSENSE USER PASSWORD"
 
 if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
 then
   echo "OPNSENSE_USER_PASSWORD not found - please export it as an environment variable"
   exit 1  
 fi
-
-echo "CHECK OPNSENSE ROOT PASSWORD"
 
 if [[ -z "${OPNSENSE_ROOT_PASSWORD}" ]]
 then
@@ -85,7 +107,11 @@ source  $WORKDIR/packer_env.sh
 
 rm  $WORKDIR/packer_env.sh
 
-echo "run packer to build a freebsd image"
+echo "initialize packer.."
+
+packer init packer/freebsd.pkr.hcl
+
+echo "build freebsd image"
 
 packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
 

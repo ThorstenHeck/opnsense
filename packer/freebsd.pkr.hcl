@@ -53,7 +53,6 @@ source "hcloud" "opnsense" {
     most_recent   = true
     with_selector = ["name==freebsd"]
   }
-  ssh_keys = ["comp2"]
   location    = "nbg1"
   server_name = "packer-opnsense"
   server_type = "cx11"
