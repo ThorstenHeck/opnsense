@@ -51,9 +51,9 @@ If all environment vars are set up properly run:
 
 it will ask you to enter a working directory and use this to setup a SSH-Key Pair in given directory under $WORKDIR/.ssh 
 
-You can skip the SSH-Key creation with the "--skip_ssh" parameter but to make the setup script work out of the box you have to copy a valid SSH-Key into the working directory.
+You can skip the SSH-Key creation with the "-s" parameter but to make the setup script work out of the box you have to copy a valid SSH-Key into the working directory.
 
-    bash hetzner_setup.sh --skip_ssh
+    bash hetzner_setup.sh -s
 
 Thats it, now you can create a new Server from the opnsense image and access opnsense via the WebGUI or SSH.
 
@@ -105,7 +105,7 @@ Inside the image populate the environment variables
 
 and then run the shell script
 
-    bash hetzner_setup.sh -d/home/hetzner  -t true -o false
+    bash hetzner_setup.sh -d/home/hetzner -t true -o false
 
 if you want to keep your ssh-keys copy it from the container to your machine
 

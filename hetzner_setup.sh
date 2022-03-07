@@ -119,6 +119,6 @@ fi
 
 if [[ -z "${TERRAFORM}" ]]
 then
-    terraform init -chdir=terraform/opnsense
-    terraform apply terraform/opnsense/main.tf -auto-approve
+    terraform -chdir=terraform/opnsense init
+    terraform -chdir=terraform/opnsense apply -auto-approve
 fi
