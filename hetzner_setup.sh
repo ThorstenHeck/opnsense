@@ -4,6 +4,8 @@ while getopts "sdot" opt; do
   case $opt in
     s) SKIP_SSH="true"
     ;;
+    c) CONFIG_FILE="true"
+    ;;
     t) TERRAFORM="true"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
@@ -11,7 +13,10 @@ while getopts "sdot" opt; do
   esac
 done
 
-source secret.env
+if [ "$CONFIG_FILE" = true ]
+then
+    source secret.env
+fi
 
 echo "Setup Hetzner Environment"
 

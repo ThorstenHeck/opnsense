@@ -41,13 +41,13 @@ Export the needed secrets to make it work:
     export OPNSENSE_USER_PASSWORD=<SECRET>
     export OPNSENSE_ROOT_PASSWORD=<SECRET>
 
-Or edit the secret.env file and execute:
-
-    source secret.env
-
-If all environment vars are set up properly run:
+You can also edit the secret.env file with the "-c" parameter the script picks up the content of the file.
 
     bash hetzner_setup.sh
+
+Or with a proper configured secret.env file:
+
+    bash hetzner_setup.sh -c
 
 The default working directory is the home directory and the script will setup a SSH-Key Pair under $HOME/.ssh.
 
@@ -89,7 +89,7 @@ https://github.com/ThorstenHeck/opnsense_advanced
 
 If you are annoyed of the dependencies you can build and run a docker image:
 
-Prepare the secret.env file to match
+Prepare the secret.env file, build and run the image then run the setup script:
 
 Build Docker image:
 
@@ -99,13 +99,9 @@ Run Docker image:
 
     docker run -it opnsense
 
-Inside the image populate the environment variables
-
-    source secret.env
-
 and then run the shell script
 
-    bash hetzner_setup.sh -t
+    bash hetzner_setup.sh -c -t
 
 if you want to keep your ssh-keys copy it from the container to your machine
 
