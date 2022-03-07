@@ -33,10 +33,10 @@ fi
 
 if [[ -z "${INVALID_TOKEN}" ]]
 then
+  echo "Valid Token"
+else
   echo "Invalid Token - please check your API Token"
   exit 1
-else
-  echo "valid token"
 fi
 
 if [[ -z "${OPNSENSE_USER_PASSWORD}" ]]
