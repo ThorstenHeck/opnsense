@@ -27,6 +27,9 @@ then
 else
   echo "check if Token is valid"
   INVALID_TOKEN=$(curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/actions' | jq .error)
+  curl -s -H "Authorization: Bearer $HCLOUD_TOKEN" 'https://api.hetzner.cloud/v1/actions' | jq .error
+  echo $INVALID_TOKEN
+
   if [[ -z "${INVALID_TOKEN}" ]]
   then
     echo "Invalid Token - please check your API Token"
