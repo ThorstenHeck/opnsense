@@ -15,3 +15,7 @@ variable "OPNSENSE_USER_PASSWORD" {
 variable "SSH_KEY" {
   type = string
 }
+
+variable "SSH_PRIVATE_KEY_FILE" {
+  type    = string
+}

@@ -109,6 +109,7 @@ sed -i 's|OPNSENSE_SSH_PUB\b|'"$OPNSENSE_SSH_PUB"'|g' packer/opnsense/config.xml
 
 cat <<EOF > $WORKDIR/packer_env.sh
 export OPNSENSE_SSH_PRIV=$OPNSENSE_SSH_PRIV
+export TF_VAR_OPNSENSE_SSH_PRIV=$OPNSENSE_SSH_PRIV
 export OPNSENSE_USER=$OPNSENSE_USER
 EOF
 

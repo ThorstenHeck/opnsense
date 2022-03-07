@@ -11,6 +11,7 @@ resource "hcloud_server" "server" {
     user     = data.hcloud_ssh_key.ssh-key.name
     password = var.OPNSENSE_USER_PASSWORD
     host     = self.ipv4_address
+    private_key = "${file($var.SSH_PRIVATE_KEY_FILE)}"
   }
 
   provisioner "remote-exec" {
@@ -19,7 +20,6 @@ resource "hcloud_server" "server" {
     ]
   }
 }
-
 
 data "hcloud_ssh_key" "ssh-key" {
   name = "${var.SSH_KEY}"
