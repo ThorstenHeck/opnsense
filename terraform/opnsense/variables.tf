@@ -12,7 +12,7 @@ variable "OPNSENSE_USER_PASSWORD" {
   type = string
 }
 
-variable "SSH_KEY" {
+variable "SSH_KEY_NAME" {
   type = string
 }
 
