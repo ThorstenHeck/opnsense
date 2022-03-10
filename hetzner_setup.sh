@@ -1,12 +1,14 @@
 #!/bin/bash
 
-while getopts "sct" opt; do
+while getopts "sctp" opt; do
   case $opt in
     s) SKIP_SSH="true"
     ;;
     c) CONFIG_FILE="true"
     ;;
-    t) TERRAFORM="true"
+    t) SKIP_TERRAFORM="true"
+    ;;
+    p) SKIP_PACKER="true"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -109,20 +111,44 @@ sed -i 's|OPNSENSE_SSH_PUB\b|'"$OPNSENSE_SSH_PUB"'|g' packer/opnsense/config.xml
 
 cat <<EOF > $WORKDIR/packer_env.sh
 export OPNSENSE_SSH_PRIV=$OPNSENSE_SSH_PRIV
-export TF_VAR_OPNSENSE_SSH_PRIV=$OPNSENSE_SSH_PRIV
 export OPNSENSE_USER=$OPNSENSE_USER
+export TF_VAR_HCLOUD_TOKEN=$HCLOUD_TOKEN
+export TF_VAR_SSH_PRIVATE_KEY_FILE=$OPNSENSE_SSH_PRIV
+export TF_VAR_SSH_KEY_NAME=$OPNSENSE_USER
+export TF_VAR_OPNSENSE_USER_PASSWORD=$OPNSENSE_USER_PASSWORD
 EOF
 
 source  $WORKDIR/packer_env.sh
 rm  $WORKDIR/packer_env.sh
 
+if [ "$SKIP_PACKER" = true ]
+then
+echo 'Skip Packer Image creation!'
+else
 packer init packer/freebsd.pkr.hcl
-
 packer build -only=hcloud.freebsd packer/freebsd.pkr.hcl
 packer build -only=hcloud.opnsense packer/freebsd.pkr.hcl
+fi
 
-if [ ! -z "$TERRAFORM" ]
+if [ "$SKIP_TERRAFORM" = true ]
 then
-    terraform -chdir=terraform/opnsense init
-    terraform -chdir=terraform/opnsense apply -auto-approve
+echo 'Skip Packer Image creation!'
+else
+terraform -chdir=terraform/opnsense init
+terraform -chdir=terraform/opnsense apply -auto-approve
+fi
+
+
+if [ "$SKIP_SSH" != true ]
+then
+echo ""
+echo ""
+# SSH Key Generation output
+echo "############# Privat Key File ##########"
+echo ""
+echo $(cat $OPNSENSE_SSH_PRIV)
+echo ""
+echo "############# Public Key File ##########"
+echo ""
+echo $OPNSENSE_SSH_PUB
 fi

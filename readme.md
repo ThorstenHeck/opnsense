@@ -93,17 +93,14 @@ Prepare the secret.env file, build and run the image then run the setup script:
 
 Build Docker image:
 
-    docker build . -t opnsense
+    cd opnsense
+    docker build -t opnsense .
 
 Run Docker image:
 
-    docker run -it opnsense
-
-and then run the shell script
-
-    bash hetzner_setup.sh -c -t
-
-if you want to keep your ssh-keys copy it from the container to your machine
-
-    docker cp containerid:/.ssh/$OPNSENSE_USER ~/.ssh/opnsense
-    docker cp containerid:/.ssh/$OPNSENSE_USER.pub ~/.ssh/opnsense.pub
+    docker run --rm \
+            -e HCLOUD_TOKEN=$HCLOUD_TOKEN \
+            -e OPNSENSE_USER=opn_admin \
+            -e OPNSENSE_USER_PASSWORD=opn_password \
+            -e OPNSENSE_ROOT_PASSWORD=root_password \
+            opnsense

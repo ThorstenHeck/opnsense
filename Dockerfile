@@ -35,3 +35,5 @@ COPY --chown=hetzner terraform /home/hetzner/terraform
 # Enable Auto-completion
 RUN packer -autocomplete-install; \
     terraform -install-autocomplete
+
+ENTRYPOINT ["bash","hetzner_setup.sh"]
