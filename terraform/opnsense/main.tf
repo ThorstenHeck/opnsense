@@ -3,7 +3,7 @@ resource "hcloud_server" "server" {
   server_type = "cx11"
   image       = data.hcloud_image.image.id
   location    = "nbg1"
-  SSH_KEY_NAMEs    = [data.hcloud_ssh_key.ssh-key.name]
+  ssh_keys    = [data.hcloud_ssh_key.ssh-key.name]
   keep_disk   = true
 
   connection {
