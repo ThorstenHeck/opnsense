@@ -144,11 +144,11 @@ then
 echo ""
 echo ""
 # SSH Key Generation output
-echo "############# Privat Key File ##########"
+echo "########## Privat Key File ##########"
 echo ""
 echo $(cat $OPNSENSE_SSH_PRIV)
 echo ""
-echo "############# Public Key File ##########"
+echo "########## Public Key File ##########"
 echo ""
 echo $OPNSENSE_SSH_PUB
 fi
