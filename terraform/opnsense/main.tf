@@ -3,12 +3,12 @@ resource "hcloud_server" "server" {
   server_type = "cx11"
   image       = data.hcloud_image.image.id
   location    = "nbg1"
-  SSH_KEY_NAMEs    = [data.hcloud.SSH_KEY_NAME.ssh-key.name]
+  SSH_KEY_NAMEs    = [data.hcloud_ssh_key.ssh-key.name]
   keep_disk   = true
 
   connection {
     type     = "ssh"
-    user     = data.hcloud.SSH_KEY_NAME.ssh-key.name
+    user     = data.hcloud_ssh_key.ssh-key.name
     password = var.OPNSENSE_USER_PASSWORD
     host     = self.ipv4_address
     private_key = "${file(var.SSH_PRIVATE_KEY_FILE)}"
@@ -21,7 +21,7 @@ resource "hcloud_server" "server" {
   }
 }
 
-data "SSH_KEY_NAME" "ssh-key" {
+data "hcloud_ssh_key" "ssh-key" {
   name = "${var.SSH_KEY_NAME}"
 }
 
